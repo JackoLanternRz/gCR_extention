@@ -68,14 +68,14 @@ int main(int argc, char *argv[])
 		{
 			float usage = getCpuUsage(GET_CPU_USAGE_DELAY);
 			char usageMsg[30];
-		        snprintf(usageMsg, sizeof(usageMsg), "Ctrl #%d CPU %0.2f", ctrlN, usage);
+		        snprintf(usageMsg, sizeof(usageMsg), "Ctrl #%d CPU %0.2f\n", ctrlN, usage);
         		write(sock, usageMsg, strlen(usageMsg));
 			debugflag++;
 		}
 		else // received ctrl+c
 		{	
 			char clsConMsg[40];
-			snprintf(clsConMsg, sizeof(clsConMsg), "Ctrl #%d disconnect", ctrlN);
+			snprintf(clsConMsg, sizeof(clsConMsg), "Ctrl #%d disconnect\n", ctrlN);
 			write(sock, clsConMsg, strlen(clsConMsg));
 			printf("Close connection\n");
 			close(sock);

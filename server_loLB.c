@@ -13,9 +13,69 @@
 #include<netdb.h>
 
 #define QCLI 20
+#define MAXLINE 10000
 
 extern int errno;
 int tcp(char *port);
+char *rcv_cli_msg( int cli_sockfd, char *line )
+{
+	int n;
+	n = readline( cli_sockfd, line, MAXLINE );
+	if( n == 0 )
+	{
+		return '\0';
+	}
+	else if( n < 0 )
+	{
+		fprintf( stderr, "controller %d message error\n", cli_sockfd );
+		exit(0);
+	} 
+	
+	return line;
+}
+
+int readline( int fd, char *ptr, int maxlen )
+{
+	int n, rc;
+	char c;
+	for( n = 1; n < maxlen; n++ )
+	{
+		if( rc = read(fd, &c, 1) == 1 )
+		{
+			*ptr++ = c;
+			
+			if( c == '\n' )
+				break;
+		}
+		else if( rc == 0 )
+		{
+			if( n == 1 )
+				return 0; // EOF, no data read
+			else
+				break;	// EOF, some data was read
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	*ptr = 0;
+	return n;
+}
+
+char *rm_ln_from_line( char *line )
+{
+	int i;
+	for( i = 0 ; i < strlen(line) ; i++ )
+	{
+		if( line[i] == '\n' )
+		{
+			line[i] = '\0';
+			break;
+		}
+	}
+	return line;
+}
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +88,7 @@ int main(int argc, char *argv[])
 	int fd, nfds, rc, a;
 
 	char *temp = malloc(sizeof(char)*1000);
+        char *line, *rmnline;
 	int debugflag = 0;
 
 	msock = tcp(argv[1]);
@@ -48,7 +109,7 @@ int main(int argc, char *argv[])
 		if(FD_ISSET(msock, &rfds))
 		{
 			int ssock;
-			char *temp = malloc(sizeof(char)*1000);
+			// char *temp = malloc(sizeof(char)*1000);
 			
 			alen = sizeof(fsin);
 			ssock = accept(msock, (struct sockaddr *)&fsin, &alen);
@@ -72,17 +133,18 @@ int main(int argc, char *argv[])
 			if(fd != msock && FD_ISSET(fd, &rfds))
 			{		
 				printf("debugflag=%d\n", debugflag);
-				read(fd, temp, 999);
-				if(strstr(temp, "disconnect") != NULL)
+				line = rcv_cli_msg( fd, temp );
+				rmnline = rm_ln_from_line( line );
+				if(strstr( line, "disconnect") != NULL)
 				{
-					printf("%s\n", temp);
-					close(fd);
+					printf("%s\n", rmnline);
+					(void) close(fd);
 					FD_CLR(fd, &afds);
 					bzero(temp, 999);
 				}
 				else
 				{
-					printf("%s (fd=%d)", temp, fd);
+					printf("%s (fd=%d)", rmnline, fd);
 					debugflag++;
 					bzero(temp, 999);
 				}
