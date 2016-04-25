@@ -60,7 +60,11 @@ int main(int argc, char *argv[])
 	{
 		if( read(sock, temp, 999) )
 		{	
-			printf("%s\n",temp);
+			printf("\n%s\n",temp);
+			if( strstr(temp, "GIVE ME SWITCH INFO") != NULL )
+			{
+				printf("get switch info\n");
+			}
 			bzero(temp, 999);
 		}
 
@@ -68,7 +72,7 @@ int main(int argc, char *argv[])
 		{
 			float usage = getCpuUsage(GET_CPU_USAGE_DELAY);
 			char usageMsg[30];
-		        snprintf(usageMsg, sizeof(usageMsg), "Ctrl #%d CPU %0.2f\n", ctrlN, usage);
+		        snprintf(usageMsg, sizeof(usageMsg), "%d %0.2f\n", ctrlN, usage);
         		write(sock, usageMsg, strlen(usageMsg));
 			debugflag++;
 		}

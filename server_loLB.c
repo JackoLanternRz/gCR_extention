@@ -14,9 +14,85 @@
 
 #define QCLI 20
 #define MAXLINE 10000
+#define MAX_CTRL 100
 
 extern int errno;
 int tcp(char *port);
+void print_float_array( float *array, int length );
+void print_array_avg( float *array, int length );
+/*void test_write( int *ctrlsockfds )
+{
+	int i;
+	for( i = 0; i < MAX_CTRL; i++ )
+	{
+		if( ctrlsockfds[i] != 0 )
+			write( ctrlsockfds[i], "GIVE me switch info\n" , strlen("GIVE me switch info\n") );
+	}
+}*/
+
+float average( float *array, int length )
+{
+	int i;
+	float sum = 0;
+	for( i = 0; i < length; i++ )
+		sum += array[i];
+	
+	return (sum/length);
+}
+
+int check_balance( float avg, float *array, int length )
+{
+	int i, not_bal = 0;
+	for( i = 0; i < length; i++ )
+	{
+		if( (array[i] - avg) >= 15 || (array[i] - avg) <= -15 )
+			not_bal++;
+	}
+
+	if( not_bal >= 5 )
+		return 1;
+	else
+		return 0;
+
+}
+
+int not_balance( float *array, int length )
+{
+	float avg;
+	avg = average( array, length);
+
+	return check_balance( avg, array, length);
+}
+
+int getctrlindex( int *ctrlsockfds )
+{
+	int i=0;
+	while( 1 )
+	{
+		if( ctrlsockfds[i] == 0 )
+		{
+			return i;
+		}
+		else
+			i++;
+	}
+}
+
+void add_ctrl_fd( int *ctrlsockfds, int ctrlindex, int ctrlfd )
+{
+	ctrlsockfds[ctrlindex] = ctrlfd;
+}
+
+void rm_ctrl_fd( int *ctrlsockfds, int ctrlfd )
+{
+	int i;
+	for( i = 0 ; i < MAX_CTRL ; i++ )
+	{
+		if( ctrlsockfds[i] == ctrlfd )
+			ctrlsockfds = 0;
+	}
+}
+
 char *rcv_cli_msg( int cli_sockfd, char *line )
 {
 	int n;
@@ -85,7 +161,12 @@ int main(int argc, char *argv[])
 	fd_set rfds;
 	fd_set afds;
 	int alen;
-	int fd, nfds, rc, a;
+	int ctrlsockfds[MAX_CTRL];
+	int fd, nfds, rc, a, i, ctrlnum = 0, uti_count = 0;
+	int isnt_bal = 0, GA_running_lock = 0, init_stat = 1, sw_info_ctr = 0 ;
+	float array_uti[100];
+	for( i = 0 ; i < 100 ; i++ )
+		array_uti[i] = 0;
 
 	char *temp = malloc(sizeof(char)*1000);
         char *line, *rmnline;
@@ -109,7 +190,6 @@ int main(int argc, char *argv[])
 		if(FD_ISSET(msock, &rfds))
 		{
 			int ssock;
-			// char *temp = malloc(sizeof(char)*1000);
 			
 			alen = sizeof(fsin);
 			ssock = accept(msock, (struct sockaddr *)&fsin, &alen);
@@ -119,7 +199,10 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}	
 			fprintf(stdout, "\nClient conneted, fd=%d.\n",ssock);
-			FD_SET(ssock, &afds);
+			FD_SET(ssock, &afds); //** set FD_SET **//
+			printf("%d\n", ssock);
+			//add_ctrl_fd( ctrlsockfds, getctrlindex( ctrlsockfds ), ssock);
+			ctrlnum ++;	//** linked controller number +1 **//
 
 			/**  communication  **/
 			char *sucMsg = "\nServer: Server connected sucess.\n\0";
@@ -132,7 +215,8 @@ int main(int argc, char *argv[])
 		{
 			if(fd != msock && FD_ISSET(fd, &rfds))
 			{		
-				printf("debugflag=%d\n", debugflag);
+				//printf("debugflag=%d\n", debugflag);
+
 				line = rcv_cli_msg( fd, temp );
 				rmnline = rm_ln_from_line( line );
 				if(strstr( line, "disconnect") != NULL)
@@ -140,19 +224,73 @@ int main(int argc, char *argv[])
 					printf("%s\n", rmnline);
 					(void) close(fd);
 					FD_CLR(fd, &afds);
+					//rm_ctrl_fd( ctrlsockfds, fd );
+					ctrlnum--;
 					bzero(temp, 999);
 				}
 				else
 				{
-					printf("%s (fd=%d)", rmnline, fd);
+					//printf("%s\n", rmnline);
 					debugflag++;
+		
+					char *cindex, *uti;
+					
+					//** record CPU utl **//
+					if( ctrlnum >= 3 )
+					{
+						cindex = strtok( rmnline, " " );
+						uti = strtok( NULL, " " );
+						printf( "%s ", cindex );
+						if( strcmp(uti, "inf" ) != 0 )
+						{
+							//printf("%f\n", atof(uti) );
+
+							if( uti_count >= 15 && init_stat == 1 )
+								init_stat = 0;
+
+							if( uti_count >= 15 ) //** record 2.5 sec uti a set **//
+							{
+								uti_count = 0;
+							}
+							array_uti[uti_count] = atof(uti);
+							uti_count ++;
+							
+							print_float_array(array_uti, 15);
+							print_array_avg(array_uti, 15);
+							
+							if( init_stat == 0 ) // array isn't in initial state, start count balanced
+								isnt_bal = not_balance(array_uti, 15);
+
+							if( isnt_bal == 1 )
+								printf("Not balanced!\n");
+
+							if( isnt_bal == 1 && GA_running_lock == 0 )
+							{
+								printf("start GA!\n");
+								GA_running_lock = 1;
+							}
+							else ;
+							
+							isnt_bal = 0;
+						}
+						else
+						{
+							printf("dont get\n");
+						}
+						
+					}
+					//** end of record CPU utl **//
+					
 					bzero(temp, 999);
 				}
 			}
 			if(fd != msock && FD_ISSET(fd, &wfds))
 			{
-				//char *replyMsg = "Server reply\n\0";
-				//write(fd, replyMsg , strlen(replyMsg));		
+				if( GA_running_lock == 1 && sw_info_ctr < ctrlnum  )
+				{
+					write(fd, "GIVE ME SWITCH INFO\n", strlen("GIVE ME SWITCH INFO\n") );
+					sw_info_ctr ++;
+				}
 			}
 		}
 	}
@@ -208,4 +346,19 @@ int tcp(char *port)
         
 	return sock;
 	
+}
+
+void print_float_array( float *array, int length )
+{
+	int i;
+	for( i = 0 ; i < length ; i++ )
+	{
+		printf(" %.2f", array[i] );
+	}
+	printf("\n");
+}
+
+void print_array_avg( float *array, int length )
+{
+	printf("avg = %.2f\n", average( array, length ) );
 }
