@@ -15,10 +15,13 @@
 #define QCLI 20
 #define MAXLINE 10000
 #define MAX_CTRL 100
+#define CPU_SHOCK 15
+#define OVER_THRESH_CELL 7
 
 extern int errno;
 int tcp(char *port);
 void print_float_array( float *array, int length );
+void exec_GA();
 void print_array_avg( float *array, int length );
 /*void test_write( int *ctrlsockfds )
 {
@@ -45,11 +48,12 @@ int check_balance( float avg, float *array, int length )
 	int i, not_bal = 0;
 	for( i = 0; i < length; i++ )
 	{
-		if( (array[i] - avg) >= 15 || (array[i] - avg) <= -15 )
+		// CPU shock = 15%
+		if( (array[i] - avg) >= CPU_SHOCK || (array[i] - avg) <= -CPU_SHOCK )
 			not_bal++;
 	}
 
-	if( not_bal >= 5 )
+	if( not_bal >= OVER_THRESH_CELL )
 		return 1;
 	else
 		return 0;
@@ -172,6 +176,12 @@ int main(int argc, char *argv[])
         char *line, *rmnline;
 	int debugflag = 0;
 
+	if( argv[1] == NULL )
+	{
+		printf("./<file> <port>");
+		exit(-1);
+	}		
+
 	msock = tcp(argv[1]);
 	
 	nfds = getdtablesize();
@@ -268,10 +278,13 @@ int main(int argc, char *argv[])
 							{
 								printf("start GA!\n");
 								GA_running_lock = 1;
+								exec_GA();
+								GA_running_lock = 0;
+								isnt_bal = 0;
 							}
 							else ;
 							
-							isnt_bal = 0;
+							
 						}
 						else
 						{
@@ -286,16 +299,44 @@ int main(int argc, char *argv[])
 			}
 			if(fd != msock && FD_ISSET(fd, &wfds))
 			{
-				if( GA_running_lock == 1 && sw_info_ctr < ctrlnum  )
-				{
-					write(fd, "GIVE ME SWITCH INFO\n", strlen("GIVE ME SWITCH INFO\n") );
-					sw_info_ctr ++;
-				}
+				;
 			}
 		}
 	}
 	
 	
+}
+
+void exec_GA()
+{
+	int i;
+	char argv[10][100];
+	
+	sprintf(argv[0], "sudo");
+	sprintf(argv[1], "./GA_connection");
+	sprintf(argv[2], "192.168.1.30");
+	
+	FILE *fp = fopen("port.txt", "r" );
+	fscanf(fp, "%s", argv[3] );
+	fclose(fp);
+
+	pid_t td_pid;
+	td_pid = fork();
+	if( td_pid < 0 )
+	{
+		fprintf(stderr, "Fork GA_connection error\n");
+	}
+	else if( td_pid == 0 )
+	{
+		fprintf(stderr, "GA_connection.\n");
+		char * argv2[] = {argv[0], argv[1], argv[2], argv[3], NULL};
+		execve("/usr/bin/sudo", argv2, NULL );
+	}
+	else
+	{
+		wait(NULL);
+		fprintf(stderr, "End of GA\n");
+	}
 }
 
 int tcp(char *port)
