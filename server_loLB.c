@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 							if( init_stat == 0 ) // array isn't in initial state, start count balanced
 								isnt_bal = not_balance(array_uti, 15);
 
-							if( isnt_bal == 1 )
+							if( isnt_bal == 1 && GA_running_lock == 0 )
 								printf("Not balanced!\n");
 
 							if( isnt_bal == 1 && GA_running_lock == 0 )
@@ -279,7 +279,8 @@ int main(int argc, char *argv[])
 								printf("start GA!\n");
 								GA_running_lock = 1;
 								exec_GA();
-								GA_running_lock = 0;
+								sleep(5);
+								GA_running_lock = 2;
 								isnt_bal = 0;
 							}
 							else ;
