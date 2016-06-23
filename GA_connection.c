@@ -9,6 +9,7 @@
 #include<string.h>
 #include<fcntl.h>
 
+void DEMO_FILE( int sw_paknum[][4], int org_swpaknum[][4], int swn );
 int sock_to_connect_serv( char *IP, char *port );
 int dfa( int sw_paknum[][4], int ctrln, int swn, int org )
 {
@@ -248,6 +249,13 @@ int main(int argc, char *argv[] )
 				int parent_index[2], p_mu, mut_rate=2;	
 				while( gen <= max_gen && good_chr_n < max_good_chr )
 				{
+					if( (chrome_n / 1000) > (gen-1) )
+					{
+						printf("chrome_n = %d\n", chrome_n );
+						gen++;
+						printf("Generation add, G=%d\n", gen );			
+					}
+
 					/*** Initialize a chrome  ***/
 					for( i = 0 ; i < 2 ; i++ )
 						for( j = 0 ; j < swn ; j++ )	
@@ -355,12 +363,7 @@ int main(int argc, char *argv[] )
 
 					chrome_n++;
 		
-					if( (chrome_n / 1000) > (gen-1) )
-					{
-						printf("chrome_n = %d\n", chrome_n );
-						gen++;
-						printf("Generation add, G=%d\n", gen );			
-					}
+					
 				}
 				// END of Crossover & mutation
 
@@ -393,6 +396,8 @@ int main(int argc, char *argv[] )
 				for( j = 0 ; j < swn ; j++ )
 					printf( "%d,", good_chr[max_index][j][3] );
 				printf( "\n");
+
+				/*********************************************************************/ DEMO_FILE( good_chr[max_index] , sw_paknum, swn );
 				
 				char to_serv_msg[1000], temp[1000];
 				bzero(to_serv_msg, 1000);
@@ -447,6 +452,93 @@ int main(int argc, char *argv[] )
 		
 	}
 	return 0;
+}
+
+void DEMO_FILE( int sw_paknum[][4], int org_swpaknum[][4], int swn )
+{
+	int i, c[3][20], i1 = 0, i2 = 0, i3 = 0, j;
+	for( i = 0 ; i < swn ; i++ )
+	{
+		if( sw_paknum[i][2] == 1 )
+		{
+			c[sw_paknum[i][2]-1][i1] = i;
+			i1++;
+		}	
+		if( sw_paknum[i][2] == 2 )
+		{
+			c[sw_paknum[i][2]-1][i2] = i;
+			i2++;
+		}	
+		if( sw_paknum[i][2] == 3 )
+		{
+			c[sw_paknum[i][2]-1][i3] = i;
+			i3++;
+		}	
+
+		if( sw_paknum[i][3] == 1 )
+		{
+			c[sw_paknum[i][3]-1][i1] = i;
+			i1++;
+		}	
+		if( sw_paknum[i][3] == 2 )
+		{
+			c[sw_paknum[i][3]-1][i2] = i;
+			i2++;
+		}	
+		if( sw_paknum[i][3] == 3 )
+		{
+			c[sw_paknum[i][3]-1][i3] = i;
+			i3++;
+		}	
+	}
+	
+	int check_list[3], bool_swchlink[20] = {0};
+	for( i = 0 ; i < swn ; i++ )
+	{
+		check_list[0] = check_list[1] = check_list[2] = 0;
+
+		check_list[sw_paknum[i][2]]++;
+		check_list[sw_paknum[i][3]]++;
+		check_list[org_swpaknum[i][2]]++;
+		check_list[org_swpaknum[i][3]]++;
+
+		for( j = 0 ; j < 3 ; j++ )
+		{
+			if( check_list[j] == 1 )
+			{
+				bool_swchlink[i] = 1;
+				break;
+			}
+		}
+	}
+
+	FILE *fp = fopen("ctrl_link.demo", "w");
+	for( i = 0 ; i < i1 ; i++ )
+	{
+		fprintf( fp, "\\\"%d\\\"", c[0][i] );
+		if( i != (i1-1) )
+			fprintf( fp, ",");
+	}	fprintf( fp, "\n" );
+
+	for( i = 0 ; i < i2 ; i++ )
+	{
+		fprintf( fp, "\\\"%d\\\"", c[1][i] );
+		if( i != (i2-1) )
+			fprintf( fp, ",");
+	}	fprintf( fp, "\n" );
+
+	for( i = 0 ; i < i3 ; i++ )
+	{
+		fprintf( fp, "\\\"%d\\\"", c[2][i] );
+		if( i != (i3-1) )
+			fprintf( fp, ",");
+	}	fprintf( fp, "\n" );
+	for( i = 0 ; i < swn ; i++ )
+	{
+		if( bool_swchlink[i] == 1 )
+		fprintf(fp, "%d\n", i );	
+	}
+	fclose(fp);
 }
 
 int sock_to_connect_serv( char *IP, char *port )
