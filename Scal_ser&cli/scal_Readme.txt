@@ -1,42 +1,44 @@
-¦p¦ó°õ¦æ¦³scale out/in¥\¯àªºLBA:
-¥Dµ{¦¡: server_loLB_scal.c
-½sÄ¶: gcc server_loLB_scal.c  -o <¥ô·Nfilename>
-°õ¦æ¤è¦¡: ./<¥ô·Nfilename> <local controller­n³s¹L¨Óªºport>
-µ{¦¡©ñ¸m¦ì¤l: ³o¤äµ{¦¡©ñ¦bglobal controller¤W
+å¦‚ä½•åŸ·è¡Œæœ‰scale out/inåŠŸèƒ½çš„LBA:
+ä¸»ç¨‹å¼: server_loLB_scal.c
+ç·¨è­¯: gcc server_loLB_scal.c  -o <ä»»æ„filename>
+åŸ·è¡Œæ–¹å¼: ./<ä»»æ„filename> <local controllerè¦é€£éä¾†çš„port>
+ç¨‹å¼æ”¾ç½®ä½å­: é€™æ”¯ç¨‹å¼æ”¾åœ¨global controllerä¸Š
 
-°Æµ{¦¡:GA_connection_scal.c
-½sÄ¶: gcc GA_connection_scal.c  -o GA_connection_scal  //¦WºÙ½Ğ©T©w¡A¥Dµ{¦¡­n¥H¦¹ÀÉ¦W°õ¦æ¸Ó°Æµ{¦¡
-°õ¦æ¤è¦¡: ¤£¥Î°õ¦æ¡A½sÄ¶¦¨¥\«á©ñµÛ¡A¥Dµ{¦¡±Ò°ÊGA®É¨Ï¥Î
-µ{¦¡©ñ¸m¦ì¤l: ³o¤äµ{¦¡¤]©ñ¦bglobal controller¤W
+å‰¯ç¨‹å¼:GA_connection_scal.c
+ç·¨è­¯: gcc GA_connection_scal.c  -o GA_connection_scal  //åç¨±è«‹å›ºå®šï¼Œä¸»ç¨‹å¼è¦ä»¥æ­¤æª”ååŸ·è¡Œè©²å‰¯ç¨‹å¼
+åŸ·è¡Œæ–¹å¼: ä¸ç”¨åŸ·è¡Œï¼Œç·¨è­¯æˆåŠŸå¾Œæ”¾è‘—ï¼Œä¸»ç¨‹å¼å•Ÿå‹•GAæ™‚ä½¿ç”¨
+ç¨‹å¼æ”¾ç½®ä½å­: é€™æ”¯ç¨‹å¼ä¹Ÿæ”¾åœ¨global controllerä¸Š
 
-°Æµ{¦¡: send_scal_in_signal_client.c
-½sÄ¶: gcc send_scal_in_signal_client.c  -o send_scal_in_signal_client //¦WºÙ¤]½Ğ©T©w¡A¥Dµ{¦¡­n¥H¦¹ÀÉ¦W°õ¦æ¸Ó°Æµ{¦¡
-°õ¦æ¤è¦¡: ¤£¥Î°õ¦æ¡A½sÄ¶¦¨¥\«á©ñµÛ¡A¥Dµ{¦¡±Ò°ÊGA®É¨Ï¥Î
-µ{¦¡©ñ¸m¦ì¤l: ³o¤äµ{¦¡¤]©ñ¦bglobal controller¤W
+å‰¯ç¨‹å¼: send_scal_in_signal_client.c
+ç·¨è­¯: gcc send_scal_in_signal_client.c  -o send_scal_in_signal_client //åç¨±ä¹Ÿè«‹å›ºå®šï¼Œä¸»ç¨‹å¼è¦ä»¥æ­¤æª”ååŸ·è¡Œè©²å‰¯ç¨‹å¼
+åŸ·è¡Œæ–¹å¼: ä¸ç”¨åŸ·è¡Œï¼Œç·¨è­¯æˆåŠŸå¾Œæ”¾è‘—ï¼Œä¸»ç¨‹å¼å•Ÿå‹•GAæ™‚ä½¿ç”¨
+ç¨‹å¼æ”¾ç½®ä½å­: é€™æ”¯ç¨‹å¼ä¹Ÿæ”¾åœ¨global controllerä¸Š
 
-°Æµ{¦¡: send_scal_out_signal_client.c
-½sÄ¶: gcc send_scal_out_signal_client.c  -o send_scal_out_signal_client //¦WºÙ¤]½Ğ©T©w¡A¥Dµ{¦¡­n¥H¦¹ÀÉ¦W°õ¦æ¸Ó°Æµ{¦¡
-°õ¦æ¤è¦¡: ¤£¥Î°õ¦æ¡A½sÄ¶¦¨¥\«á©ñµÛ¡A¥Dµ{¦¡±Ò°ÊGA®É¨Ï¥Î
-µ{¦¡©ñ¸m¦ì¤l: ³o¤äµ{¦¡¤]©ñ¦bglobal controller¤W
+å‰¯ç¨‹å¼: send_scal_out_signal_client.c
+ç·¨è­¯: gcc send_scal_out_signal_client.c  -o send_scal_out_signal_client //åç¨±ä¹Ÿè«‹å›ºå®šï¼Œä¸»ç¨‹å¼è¦ä»¥æ­¤æª”ååŸ·è¡Œè©²å‰¯ç¨‹å¼
+åŸ·è¡Œæ–¹å¼: ä¸ç”¨åŸ·è¡Œï¼Œç·¨è­¯æˆåŠŸå¾Œæ”¾è‘—ï¼Œä¸»ç¨‹å¼å•Ÿå‹•GAæ™‚ä½¿ç”¨
+ç¨‹å¼æ”¾ç½®ä½å­: é€™æ”¯ç¨‹å¼ä¹Ÿæ”¾åœ¨global controllerä¸Š
 
-»²§Uµ{¦¡: scaler_monitor_listener.c
-½sÄ¶: gcc scaler_monitor_listener.c  -o <¥ô·Nfilename>
-°õ¦æ¤è¦¡: ¦b­n³Qscale in/outªºcontroller¤W¶]¡A³o¤äµ{¦¡·|Å¥LBA°e¨Óªºscale in out °T®§¡A°õ¦æªº®É­Ô­n+sudo
-µ{¦¡©ñ¸m¦ì¤l: ­n³Qscale in/outªº local controller¤W
+è¼”åŠ©ç¨‹å¼: scaler_monitor_listener.c
+ç·¨è­¯: gcc scaler_monitor_listener.c  -o <ä»»æ„filename>
+åŸ·è¡Œæ–¹å¼: åœ¨è¦è¢«scale in/outçš„controllerä¸Šè·‘ï¼Œé€™æ”¯ç¨‹å¼æœƒè½LBAé€ä¾†çš„scale in out è¨Šæ¯ï¼ŒåŸ·è¡Œçš„æ™‚å€™è¦+sudo
+ç¨‹å¼æ”¾ç½®ä½å­: è¦è¢«scale in/outçš„ local controllerä¸Š
 
-»²§Uµ{¦¡: start.sh
-µ{¦¡©ñ¸m¦ì¤l: ­n³Qscale in/outªº local controller¤W
-¨Ï¥Î¤è¦¡: scaler_monitor_listener·|call¥L¡A±Ò°Ê³o¤@¥xlocal controllerªºmonitor
-¨Ï¥Î«e½Ğ¥ı¥´¶}¨Ó½T»{¸Ì­±ªººÊ±±µ{¦¡±Ò°Ê³]©w¡A¥]¬AºÊ±±µ{¦¡ªº°õ¦æÀÉ¦WºÙ¡ALBAªºIP¡Acontroller½s¸¹¡A³o¤äµ{¦¡°õ¦æªº®É­Ô·|²£¥Í³]©wÀÉ pid_of_cli¡A¬Oµ¹ end.sh°õ¦æªº®É­Ô¥Îªº
+è¼”åŠ©ç¨‹å¼: start.sh
+ç¨‹å¼æ”¾ç½®ä½å­: è¦è¢«scale in/outçš„ local controllerä¸Š
+ä½¿ç”¨æ–¹å¼: scaler_monitor_listeneræœƒcallä»–ï¼Œå•Ÿå‹•é€™ä¸€å°local controllerçš„monitor
+ä½¿ç”¨å‰è«‹å…ˆæ‰“é–‹ä¾†ç¢ºèªè£¡é¢çš„ç›£æ§ç¨‹å¼å•Ÿå‹•è¨­å®šï¼ŒåŒ…æ‹¬ç›£æ§ç¨‹å¼çš„åŸ·è¡Œæª”åç¨±ï¼ŒLBAçš„IPï¼Œcontrollerç·¨è™Ÿï¼Œé€™æ”¯ç¨‹å¼åŸ·è¡Œçš„æ™‚å€™æœƒç”¢ç”Ÿè¨­å®šæª” pid_of_cliï¼Œæ˜¯çµ¦ end.shåŸ·è¡Œçš„æ™‚å€™ç”¨çš„
 
-»²§Uµ{¦¡: end.sh
-µ{¦¡©ñ¸m¦ì¤l: ­n³Qscale in/outªº local controller¤W
-¨Ï¥Î¤è¦¡: scaler_monitor_listener·|call¥L¡AÃö³¬³o¤@¥xlocal controllerªºmonitor
+è¼”åŠ©ç¨‹å¼: end.sh
+ç¨‹å¼æ”¾ç½®ä½å­: è¦è¢«scale in/outçš„ local controllerä¸Š
+ä½¿ç”¨æ–¹å¼: scaler_monitor_listeneræœƒcallä»–ï¼Œé—œé–‰é€™ä¸€å°local controllerçš„monitor
 
-ConfigÀÉ:scal_out_ctrl_ip.txt
-¥Î³~: µ¹send_scal_in_signal_client¸òsend_scal_out_signal_client¦YªºconfigÀÉ¡A¨Ï¥L­Ìª¾¹Dscale local controllerªºIP
-µ{¦¡©ñ¸m¦ì¤l:  global controller
+Configæª”:scal_out_ctrl_ip.txt
+ç”¨é€”: çµ¦send_scal_in_signal_clientè·Ÿsend_scal_out_signal_clientåƒçš„configæª”ï¼Œä½¿ä»–å€‘çŸ¥é“scale local controllerçš„IP
+ç¨‹å¼æ”¾ç½®ä½å­:  global controller
 
-ConfigÀÉ:scal_out_monitor_port.txt
-¥Î³~: ¸òscaler_monitor_listener·¾³qªºport
-µ{¦¡©ñ¸m¦ì¤l: global controller¸ò­n³Qscale in/outªº local controller¤W³£­n©ñ
+Configæª”:scal_out_monitor_port.txt
+ç”¨é€”: è·Ÿscaler_monitor_listeneræºé€šçš„port
+ç¨‹å¼æ”¾ç½®ä½å­: global controllerè·Ÿè¦è¢«scale in/outçš„ local controllerä¸Šéƒ½è¦æ”¾
+
+â€» local controllerçš„monitoré‚„æ˜¯ç›´æ¥ç·¨è­¯client_loLB.c
